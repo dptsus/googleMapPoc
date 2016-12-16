@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <title>Place Autocomplete With Latitude & Longitude </title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <style>
+        #pac-input {
+            background-color: #fff;
+            padding: 0 11px 0 13px;
+            width: 400px;
+            font-family: Roboto;
+            font-size: 15px;
+            font-weight: 300;
+            text-overflow: ellipsis;
+        }
+        #pac-input:focus {
+            border-color: #4d90fe;
+            margin-left: -1px;
+            padding-left: 14px;  /* Regular padding-left + 1. */
+            width: 401px;
+        }
+        #map {
+            height: 100%;
+        }
+        html, body {
+                height: 100%;
+                margin: 0;
+                padding: 0;
+              }
+        }
+    </style>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA2cVjGq98Vt9XdT0c7v1yAxwXyizboehM&v=3.exp&libraries=places"></script>
+    <script>
+
+
+    function initialize() {
+            var mapOptions = {
+              zoom: 4,
+              center: {lat: 20.593, lng: 78.962}
+            };
+            
+            var address = (document.getElementById('pac-input'));
+            var autocomplete = new google.maps.places.Autocomplete(address);
+
+            autocomplete.setTypes(['geocode']);
+            google.maps.event.addListener(autocomplete, 'place_changed', function() {
+                var place = autocomplete.getPlace();
+                if (!place.geometry) {
+                    return;
+                }
+
+            map = new google.maps.Map(document.getElementById('map'), mapOptions);
+            var address = '';
+
+            if (place.address_components) {
+                address = [
+                    (place.address_components[0] && place.address_components[0].short_name || ''),
+                    (place.address_components[1] && place.address_components[1].short_name || ''),
+                    (place.address_components[2] && place.address_components[2].short_name || '')
+                    ].join(' ');
+            }
+            var Latitude = place.geometry.location.lat();
+            var Longitude = place.geometry.location.lng();
+            document.getElementById('lat').innerHTML = Latitude;
+            document.getElementById('long').innerHTML = Longitude;
+
+            var marker = new google.maps.Marker({
+              position: {lat: Latitude, lng: Longitude},
+              map: map
+            });
+
+            var infowindow = new google.maps.InfoWindow({
+              content: '<p>Marker Location:' + marker.getPosition() + '</p>'
+            });
+
+            google.maps.event.addListener(marker, 'click', function() {
+              infowindow.open(map, marker);
+            });
+        });
+    }
+
+   google.maps.event.addDomListener(window, 'load', initialize);
+
+    </script>
+
+    </head>
+    <body>
+        <input id="pac-input" class="controls" type="text"
+                placeholder="Enter a location"> 
+        <div>
+            <div id="lat">
+            </div> 
+            <div id="long">
+            </div> 
+        </div> 
+        <div id="map"></div>
+    </body>
+    </html>
